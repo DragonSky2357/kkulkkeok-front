@@ -4,16 +4,35 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios, { HttpStatusCode } from "axios";
+import { useCookies } from "react-cookie";
 
 const LoginPage = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(["authorization"]);
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/users/login",
+        {
+          email: data.get("email"),
+          password: data.get("password"),
+        }
+      );
+
+      console.log(response.headers["authorization"]);
+
+      if (response.status === HttpStatusCode.Ok) {
+        const token = response.headers["authorization"].split(" ")[1];
+        setCookie("authorization", token);
+        navigate("/");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (

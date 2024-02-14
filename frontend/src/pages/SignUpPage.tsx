@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FormControl,
   InputLabel,
@@ -12,17 +12,34 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
+import axios, { HttpStatusCode } from "axios";
 
 const SignUpPage = () => {
-  const [age, setAge] = React.useState("");
+  const navigate = useNavigate();
+  const [gender, setGender] = React.useState("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/users/signup",
+        {
+          email: data.get("email"),
+          gender: data.get("gender"),
+          nickname: data.get("nickname"),
+          username: data.get("username"),
+          password: data.get("password"),
+        }
+      );
+
+      if (response.status === HttpStatusCode.Created) {
+        navigate("/");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -47,21 +64,29 @@ const SignUpPage = () => {
             label="이름"
             type="text"
             id="username"
-            autoFocus
+          />
+
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="nickname"
+            label="닉네임"
+            type="text"
+            id="nickname"
           />
           <FormControl fullWidth>
             <InputLabel>성별</InputLabel>
             <Select
-              id="demo-simple-select"
-              value={age}
+              name="gender"
+              value={gender}
               label="성별"
               onChange={(event: SelectChangeEvent) =>
-                setAge(event.target.value as string)
+                setGender(event.target.value as string)
               }
             >
-              <MenuItem value={"남"}>남</MenuItem>
-              <MenuItem value={"여"}>여</MenuItem>
-              <MenuItem value={"기타"}>기타</MenuItem>
+              <MenuItem value={"MALE"}>남</MenuItem>
+              <MenuItem value={"FEMALE"}>여</MenuItem>
             </Select>
           </FormControl>
           <Box display={"flex"}>
@@ -108,11 +133,9 @@ const SignUpPage = () => {
             id="passwordConfirm"
           />
 
-          <Link to="/signup">
-            <Button type="button" fullWidth variant="contained" sx={{ mt: 2 }}>
-              회원가입
-            </Button>
-          </Link>
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
+            회원가입
+          </Button>
         </Box>
       </Box>
     </Container>

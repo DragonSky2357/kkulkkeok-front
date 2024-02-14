@@ -1,21 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Post from "../components/Post";
 import PrimarySearchAppBar from "../components/PrimarySearchAppBar";
 import { Fab } from "@mui/material";
 import { Add, PlusOne } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios, { HttpStatusCode } from "axios";
 
 const MainPage = () => {
-  const numbers = [1, 2, 3, 4, 5];
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/v1/posts");
+
+        if (response.status === HttpStatusCode.Ok) {
+          setPosts(response.data["data"]);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <Container>
       <PrimarySearchAppBar />
 
       <Main>
-        {numbers.map((number, index) => (
-          <Post />
+        {posts.map((post: any, index: number) => (
+          <Post post={post} index={index} />
         ))}
       </Main>
       <Link to="/new">

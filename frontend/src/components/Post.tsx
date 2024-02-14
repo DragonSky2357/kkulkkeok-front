@@ -17,25 +17,16 @@ import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const Post = () => {
-  //   return (
-  //     <Container>
-  //       <TopContainer>
-  //         <TopContainerTopWrapper>
-  //           <PostTopWrapper>
-  //             <span>작성자</span>
-  //             <span>작성일</span>
-  //           </PostTopWrapper>
-  //         </TopContainerTopWrapper>
-  //         <TopContainerBottomWrapper>
-  //           <h1>나만의 CU 꿀조합!</h1>
-  //         </TopContainerBottomWrapper>
-  //       </TopContainer>
-  //       <MiddleContainer></MiddleContainer>
-  //       <BottomContainer></BottomContainer>
-  //     </Container>
-  //   );
+interface IPost {
+  postId: number;
+  title: String;
+  contents: string;
+  categoryName: String;
+  nickname: String;
+}
 
+const Post = (post: IPost & any, index: number) => {
+  console.log(index);
   interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
   }
@@ -63,7 +54,7 @@ const Post = () => {
             <MoreVertIcon />
           </IconButton>
         }
-        title="꿀떡 조합"
+        title={post.post.title}
         subheader="2024-02-14"
       />
       <CardMedia
@@ -75,8 +66,7 @@ const Post = () => {
       <CardContent>
         <Typography paragraph>재료</Typography>
         <Typography variant="body1" color="text.secondary">
-          떡 300g 양파 1개 파 1대 청양고추 2개 고추장 2큰술 고춧가루 1큰술 설탕
-          1큰술 소금 약간 물 1컵 치즈 (모짜렐라 혹은 고르곤졸라 등) 100g
+          {post.post.contents}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -111,46 +101,5 @@ const Post = () => {
     </Card>
   );
 };
-
-// const Container = styled.div`
-//   width: 30%;
-//   height: 40vh;
-//   margin-top: 20px;
-//   background-color: #ddeecc;
-// `;
-
-// const TopContainer = styled.div`
-//   height: 30%;
-// `;
-
-// const TopContainerTopWrapper = styled.div`
-//   display: flex;
-//   height: 30%;
-//   width: 30%;
-//   justify-content: space-between;
-//   align-items: center;
-// `;
-
-// const PostTopWrapper = styled.div`
-//   display: flex;
-//   width: 100%;
-//   justify-content: space-between;
-// `;
-
-// const TopContainerBottomWrapper = styled.div`
-//   width: 100%;
-//   height: 70%;
-//   text-align: center;
-//   background-color: #ccffdd;
-// `;
-
-// const MiddleContainer = styled.div`
-//   height: 50%;
-//   background-color: #ccaaff;
-// `;
-// const BottomContainer = styled.div`
-//   height: 20%;
-//   background-color: #334455;
-// `;
 
 export default Post;

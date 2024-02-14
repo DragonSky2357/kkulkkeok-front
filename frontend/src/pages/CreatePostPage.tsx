@@ -8,9 +8,13 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import styled from "styled-components";
+import axios, { HttpStatusCode } from "axios";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 const CreatePostPage = () => {
-  const [age, setAge] = useState("");
+  const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies(["authorization"]);
   const [image, setImage] = useState<any>(null);
 
   const handleFileChange = (event: any) => {
@@ -24,13 +28,28 @@ const CreatePostPage = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/posts",
+        {
+          title: data.get("title"),
+          categoryName: data.get("categoryName"),
+          contents: data.get("contents"),
+        },
+        {
+          headers: { Authorization: `Bearer  ${cookies["authorization"]}` },
+        }
+      );
+
+      if (response.status === HttpStatusCode.Ok) {
+        navigate("/");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -68,11 +87,10 @@ const CreatePostPage = () => {
               margin="normal"
               required
               fullWidth
-              name="category"
+              name="categoryName"
               label="카테고리"
               type="text"
-              id="category"
-              autoFocus
+              id="categoryName"
             />
 
             <Card>
@@ -89,6 +107,7 @@ const CreatePostPage = () => {
 
             <TextField
               label="포스트 내용 작성"
+              name="contents"
               variant="outlined"
               fullWidth
               multiline
@@ -97,7 +116,7 @@ const CreatePostPage = () => {
               sx={{ mt: "20px" }}
             />
 
-            <Button type="button" fullWidth variant="contained" sx={{ mt: 10 }}>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 10 }}>
               포스팅 등록
             </Button>
           </Box>
